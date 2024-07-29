@@ -31,31 +31,24 @@ impl Config<'_> {
         let mut config = Config::new();
 
         // [1..] to avoid the first arg wich is the location of the bin
-        for arg in args[1..].iter() {
-            if arg.contains(".") {
-                match parse_address(&arg) {
+        for arg in &args[1..] {
+            if arg.contains('.') {
+                match parse_address(arg) {
                     Ok(ipv4s) => {
                         for ip in ipv4s {
                             config.ips.push(Ip {
-                                ip: ip,
-                                local: {
-                                    if ip.is_private() {
-                                        true
-                                    } else {
-                                        false
-                                    }
-                                },
-                            })
+                                ip,
+                                local: ip.is_private(),
+                            });
                         }
                     }
                     Err(err) => return Err(err),
                 }
             } else {
-                config.flags.push(&arg)
+                config.flags.push(arg);
             }
         }
-
-        return Ok(config);
+        Ok(config)
     }
 }
 
