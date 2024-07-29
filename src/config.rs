@@ -9,7 +9,7 @@ pub struct Config<'a> {
     // pub ip: IpAddr,
     pub ips: Vec<Ip>,
     pub flags: Vec<&'a str>,
-    pub lim: u32,
+    // pub lim: u32,
 }
 
 #[derive(Debug)]
@@ -23,7 +23,7 @@ impl Config<'_> {
         Config {
             ips: vec![],
             flags: vec![],
-            lim: 5,
+            // lim: 5,
         }
     }
 
@@ -72,4 +72,46 @@ fn resolve_dns(address: &str) -> Result<Vec<Ipv4Addr>, Box<dyn Error>> {
         })
         .collect();
     Ok(ipv4s)
+}
+
+#[derive(Debug)]
+pub struct Mods {
+    pub upper_lim: u32,
+    pub use_local: bool,
+}
+
+impl Mods {
+    pub fn parse_flags(config: &Config) -> Mods {
+        let mut mods = Mods {
+            upper_lim: 4,
+            use_local: false,
+        };
+
+        let flags = &config.flags;
+
+        if flags.contains(&"-u") {
+            mods.upper_lim = match get_element_after(flags) {
+                Some(x) => x,
+                None => 4,
+            }
+        }
+
+        if flags.contains(&"-l") {
+            mods.use_local = true;
+        }
+
+        return mods;
+    }
+}
+
+fn get_element_after<'a>(flags: &'a Vec<&'a str>) -> Option<u32> {
+    for window in flags.windows(2) {
+        if let ["-u", value] = &window[..] {
+            return match value.parse::<u32>() {
+                Ok(n) => Some(n),
+                Err(_) => None,
+            };
+        }
+    }
+    None
 }

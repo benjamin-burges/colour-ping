@@ -1,4 +1,4 @@
-use config::Config;
+use config::{Config, Mods};
 use std::{env, thread, time::Duration};
 use winping::{Buffer, Pinger};
 
@@ -20,14 +20,16 @@ fn main() {
         }
     };
 
-    // let mods = parse_flags(&config);
+    let mods = Mods::parse_flags(&config);
 
     println!("{:#?}", &config);
-    ping2(&config);
+    println!("{:#?}", &mods);
+
+    ping2(&config, mods);
 }
 
-fn ping2(config: &Config) {
-    let upperlim = config.lim;
+fn ping2(config: &Config, mods: Mods) {
+    let upperlim = mods.upper_lim;
 
     let pinger = Pinger::new().unwrap();
     let mut buffer = Buffer::new();
@@ -43,37 +45,3 @@ fn ping2(config: &Config) {
         }
     }
 }
-
-// struct mods {
-//     upper_lim: u32,
-//     use_local: bool,
-// }
-
-// fn parse_flags(config: &Config) {
-//     let mut mods = mods {
-//         upper_lim: 4,
-//         use_local: true,
-//     };
-
-//     let flags = &config.flags;
-
-//     if flags.contains(&"-u") {
-//         mods.upper_lim = match get_element_after_u(flags) {
-//             Some(x) => x,
-//             Err(_) => 4,
-//         }
-//     }
-// }
-
-// fn get_element_after_u<'a>(flags: &'a Vec<&'a str>) -> Option<&'a u32> {
-//     for window in flags.windows(2) {
-//         if let ["-u", value] = &window[..] {
-//             Some(match value.parse::<u32>() {
-//                 Ok(n) => return n,
-//                 Err(_) => return 4,
-//             })
-//             };
-//         }
-//     }
-//     None
-// }
