@@ -1,0 +1,8 @@
+[package]
+name = "cping"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+winping = "0.10.1"
+dns-lookup = "2.0.4"
